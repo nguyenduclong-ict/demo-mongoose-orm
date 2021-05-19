@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./*"]
+    }
+  },
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["../node_modules/@types", "./typings"]
+  },
+
+  "exclude": ["../node_modules", ".nuxt", "dist"]
+}

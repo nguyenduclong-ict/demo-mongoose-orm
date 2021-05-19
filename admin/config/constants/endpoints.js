@@ -1,0 +1,18 @@
+export const ENDPOINTS = {
+  Location: '/entity/location',
+  ProductCategory: '/entity/product-category',
+  ProductAttribute: '/entity/product-attribute',
+  Warehouse: '/entity/warehouse',
+  Product: '/entity/product',
+  ProductImport: '/entity/product-import',
+  WarrantyPolicy: '/entity/warranty-policy',
+  Post: '/entity/post',
+  ProductExport: '/entity/product-export',
+  Invoice: '/entity/invoice',
+  Media: '/entity/media',
+  Admin: '/entity/admin',
+  Role: '/entity/role',
+  User: '/entity/user',
+  Permission: '/entity/permission',
+  Upload: '/media/upload',
+}

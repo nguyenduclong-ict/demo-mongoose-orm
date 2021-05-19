@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "lib": ["es6", "dom"],
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "pretty": true,
+    "types": ["node", "reflect-metadata", "colors"],
+    "sourceMap": true,
+    "outDir": "../.build/server",
+    "target": "ES6",
+    "baseUrl": "./",
+    "skipLibCheck": true,
+    "typeRoots": ["./typings", "../node_modules/@types"],
+    "paths": {
+      "@/*": ["./*"],
+      "@/index": ["./index"],
+      "~/*": ["../admin/*"],
+      "~/index": ["../admin/index"]
+    }
+  },
+  "exclude": ["../node_modules"],
+  "include": ["./**/*"]
+}

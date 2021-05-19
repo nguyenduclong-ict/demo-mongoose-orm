@@ -1,0 +1,55 @@
+html {
+  font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+button,
+input,
+div {
+  &:focus {
+    outline: none;
+  }
+}
+
+.el-loading-mask {
+  .el-loading-spinner {
+    svg.circular {
+      margin: auto;
+    }
+  }
+}
+
+.el-dialog__body {
+  padding-top: 0px;
+  &:not(:last-child) {
+    padding-bottom: 0px;
+  }
+}
+
+div[role='alert'].el-message {
+  min-width: auto;
+}
+
+.el-table .cell {
+  word-break: break-word;
+}
+
+.clickable:active {
+  background-color: rgba($color: #000000, $alpha: 0.1);
+}
+
+.tox.tox-silver-sink.tox-tinymce-aux {
+  z-index: 2500;
+}
