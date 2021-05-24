@@ -1,9 +1,9 @@
 ```
 git clone https://github.com/nguyenduclong-ict/demo-mongoose-orm.git
 yarn
+```
 
-
-
+```
 # Development
 cp .env.example .env.dev
 # Create mongodb database
@@ -56,3 +56,10 @@ GET /todo?populates=["comments"]
 ```
 
 ## DEMO
+
+User permission
+![mongoose-orm](https://raw.githubusercontent.com/nguyenduclong-ict/demo-mongoose-orm/master/docs/1.png)
+![mongoose-orm](https://raw.githubusercontent.com/nguyenduclong-ict/demo-mongoose-orm/master/docs/2.png)
+Media library
+![mongoose-orm](https://raw.githubusercontent.com/nguyenduclong-ict/demo-mongoose-orm/master/docs/3.png)
+![mongoose-orm](https://raw.githubusercontent.com/nguyenduclong-ict/demo-mongoose-orm/master/docs/4.png)
