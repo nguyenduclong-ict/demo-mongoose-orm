@@ -1,6 +1,6 @@
 ```
-git clone https://github.com/nguyenduclong-ict/mongoose-orm-crud.git
-npm install
+git clone https://github.com/nguyenduclong-ict/demo-mongoose-orm.git
+yarn
 
 
 
