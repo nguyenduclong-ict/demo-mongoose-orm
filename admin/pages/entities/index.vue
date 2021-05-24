@@ -1,5 +1,5 @@
 <template>
-  <EntityCrud :schema="schema"></EntityCrud>
+  <EntityCrud :entity="entity"></EntityCrud>
 </template>
 
 <script>
@@ -11,18 +11,18 @@ export default {
   },
   mixins: [PageMixin],
   asyncData({ $axios, query, store, params, error }) {
-    const schema = store.state.schemas[params.name]
-    if (!schema) {
+    const entity = store.state.entities[params.name]
+    if (!entity) {
       return error({ statusCode: 404, message: 'Đối tượng không tồn tại' })
     }
     return {
-      schema,
+      entity,
     }
   },
 
   computed: {
     title() {
-      return this.schema.name || this.schema.key
+      return this.entity.name || this.entity.key
     },
   },
 }

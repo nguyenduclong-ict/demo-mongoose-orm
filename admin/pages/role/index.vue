@@ -1,5 +1,5 @@
 <template>
-  <EntityCrud :schema="schema" :custom-table-props="customTableProps" />
+  <EntityCrud :entity="schema" :custom-table-props="customTableProps" />
 </template>
 
 <script>
@@ -8,7 +8,7 @@ import { ROUTES } from '~/config/constants/routes'
 export default {
   components: { EntityCrud },
   asyncData({ store }) {
-    const schema = store.state.schemas.Role
+    const schema = store.state.entities.Role
     return {
       schema,
     }

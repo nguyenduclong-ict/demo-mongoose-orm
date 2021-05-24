@@ -2,5 +2,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
-  "scss.validate": false
+  "css.validate": false,
+  "scss.validate": false,
+  "vetur.validation.style": false
 }

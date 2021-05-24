@@ -2,8 +2,12 @@
 git clone https://github.com/nguyenduclong-ict/mongoose-orm-crud.git
 npm install
 
+
+
 # Development
 cp .env.example .env.dev
+# Create mongodb database
+# Fill mongodb connection to .env.dev file
 NODE_ENV=development
 npm run dev
 
@@ -50,3 +54,5 @@ export default {
 GET /todo?populates=["comments"]
 
 ```
+
+## DEMO

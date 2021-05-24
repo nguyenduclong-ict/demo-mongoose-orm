@@ -54,9 +54,9 @@ export class IEntity {
   updatedAt?: Date;
 }
 
-export function getEntityForm(repository: Repository) {
+export function getEntityFields(repository: Repository) {
   const options = _.get(repository.schema, KEYS.SCHEMA_PATHS);
-  const result: any = {};
+  const fields: any = {};
   const getType = (t: any) => t?.schemaName || t?.name;
   Object.keys(options).forEach((key) => {
     const field: any = {};
@@ -94,21 +94,141 @@ export function getEntityForm(repository: Repository) {
         "minlength",
         "enum",
         "default",
-        "validator",
-        "unique",
-        "props",
-        "ui"
+        "unique"
       )
     );
-    result[key] = field;
+    fields[key] = field;
   });
-  return result;
+  return fields;
+}
+
+// Declare option for column in table
+interface ColumnOptions {
+  showOverflowTooltip?: boolean;
+  hidden?: boolean;
+  width?: string;
+  isImage?: boolean;
+  isImages?: boolean;
+  [x: string]: any;
+}
+
+export function Column(options: ColumnOptions) {
+  return function (target: any, propertyKey: string) {
+    Reflect.defineMetadata(
+      "column#" + propertyKey,
+      options,
+      target.constructor
+    );
+  };
+}
+
+export const getColumnDeclare = (classDefined: any) => {
+  const descriptor: any = {};
+  Reflect.getMetadataKeys(classDefined).forEach((item: string) => {
+    if (item.startsWith("column#")) {
+      const key = item.replace("column#", "");
+      descriptor[key] = Reflect.getOwnMetadata(item, classDefined);
+    }
+  });
+  return descriptor;
+};
+
+// Declare option for form in admin
+interface FormOptions {
+  label?: string;
+  col?:
+    | number
+    | {
+        span?: number;
+        xs?: number;
+        sm?: number;
+        md?: number;
+        lg?: number;
+      };
+  input?: {
+    placeholder?: string;
+    [x: string]: any;
+  };
+  type?:
+    | "Seo"
+    | "MediaPicker"
+    | "RichText"
+    | "Checkbox"
+    | "Phone"
+    | "Email"
+    | "JSON";
+}
+
+export function Form(options: FormOptions) {
+  return function (target: any, propertyKey: string) {
+    Reflect.defineMetadata("form#" + propertyKey, options, target.constructor);
+  };
+}
+
+export const getFormDeclare = (classDefined: any) => {
+  const descriptor: any = {};
+  Reflect.getMetadataKeys(classDefined).forEach((item: string) => {
+    if (item.startsWith("form#")) {
+      const key = item.replace("form#", "");
+      descriptor[key] = Reflect.getOwnMetadata(item, classDefined);
+    }
+  });
+  return descriptor;
+};
+
+// Table
+
+const cachedEntityDeclaration = new Map();
+
+export function getEntityDeclaration(repository: Repository) {
+  const cached = cachedEntityDeclaration.get(repository);
+  if (cached) return cached;
+
+  const fields = getEntityFields(repository);
+  const ops = _.get(repository.schema, KEYS.SCHEMA_OPTIONS);
+  const rules = _.get(repository.schema, KEYS.SCHEMA_VALIDATOR);
+  const form = getFormDeclare((repository.schema as any).classDefination);
+  const column = getColumnDeclare((repository.schema as any).classDefination);
+  const name = repository.name;
+
+  const populates: any[] = [];
+
+  Object.keys(fields).forEach((key) => {
+    let field = fields[key];
+    if (field.type === "ObjectId") {
+      populates.push(key);
+      if (!field.column?.labelKey) {
+        if (ops.owner && ["createdBy", "updatedBy"].includes(key)) {
+          _.set(field, "column.labelKey", "profile.name");
+        } else _.set(field, "column.labelKey", "name");
+      }
+    }
+    field.rules = rules[key] || [];
+    field.form = form[key] || {};
+    field.column = {
+      ...field.column,
+      ...column[key],
+    };
+  });
+
+  const entity = {
+    key: name,
+    name: ops.name || name,
+    description: ops.description,
+    populates: _.uniq(populates.concat(...(ops.populates || []))),
+    endpoint: "/entity/" + _.kebabCase(name),
+    fields,
+  };
+
+  cachedEntityDeclaration.set(repository, entity);
+
+  return entity;
 }
 
 // Register global hooks
 Repository.registerHook(
   "before",
-  ["create"],
+  "create",
   function (ctx: MongooseOrm.ContextCreate) {
     const options = this.schema[KEYS.SCHEMA_OPTIONS];
     if (options.owner) ctx.data.createdBy = ctx.meta?.user?.id;
@@ -116,7 +236,7 @@ Repository.registerHook(
 );
 Repository.registerHook(
   "before",
-  ["create"],
+  "create",
   function (ctx: MongooseOrm.ContextCreate) {
     const options = this.schema[KEYS.SCHEMA_OPTIONS];
     if (options.owner) ctx.data.createdBy = ctx.meta?.user?.id;
@@ -125,7 +245,7 @@ Repository.registerHook(
 
 Repository.registerHook(
   "before",
-  ["createMany"],
+  "createMany",
   function (ctx: MongooseOrm.ContextCreateMany) {
     const options = this.schema[KEYS.SCHEMA_OPTIONS];
     if (options.owner)

@@ -98,49 +98,51 @@ export const checkRoles = (
   });
 };
 
-export const EntityPermission = (
-  entityName: string,
-  action?: PermissionAction | PermissionAction[]
-): RequestHandler => async (req, res, next) => {
-  if (req.meta.user?.isAdmin) {
-    return next();
-  }
-  action = Array.isArray(action) ? action : [action];
-  const permissions =
-    req.meta.permissions ||
-    (await userRepository.getUserPermissions(req.meta.user));
-
-  const permission = permissions.find((item) => {
-    return (
-      item.entityType === "entity" &&
-      item.entity === entityName &&
-      item.status === true &&
-      action.includes(item.action)
-    );
-  });
-
-  if (!permission) {
-    return next(
-      E.Forbidden(
-        "Bạn không có quyền '{action}' với '{entityName}'".format({
-          entityName,
-          action,
-        })
-      )
-    );
-  }
-
-  if (permission.onlySelf) {
-    if (req.method === "GET") {
-      _.set(req.query, "query.createdBy", getObjectId(req.meta.user));
-    } else {
-      _.set(req.body, "query.createdBy", getObjectId(req.meta.user));
+export const EntityPermission =
+  (
+    entityName: string,
+    action?: PermissionAction | PermissionAction[]
+  ): RequestHandler =>
+  async (req, res, next) => {
+    if (req.meta.user?.isAdmin) {
+      return next();
     }
-  }
+    action = Array.isArray(action) ? action : [action];
+    const permissions =
+      req.meta.permissions ||
+      (await userRepository.getUserPermissions(req.meta.user));
 
-  req.meta.permissions = permissions;
-  next();
-};
+    const permission = permissions.find((item) => {
+      return (
+        item.entityType === "entity" &&
+        item.entity === entityName &&
+        item.status === true &&
+        action.includes(item.action)
+      );
+    });
+
+    if (!permission) {
+      return next(
+        E.Forbidden(
+          "Bạn không có quyền '{action}' với '{entityName}'".format({
+            entityName,
+            action,
+          })
+        )
+      );
+    }
+
+    if (permission.onlySelf) {
+      if (req.method === "GET") {
+        _.set(req.query, "query.createdBy", getObjectId(req.meta.user));
+      } else {
+        _.set(req.body, "query.createdBy", getObjectId(req.meta.user));
+      }
+    }
+
+    req.meta.permissions = permissions;
+    next();
+  };
 
 export const ApiPermission: RequestHandler = async (req, res, next) => {
   if (req.meta.user?.isAdmin) {

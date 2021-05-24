@@ -165,11 +165,11 @@
           ></el-button>
 
           <div
-            class="flex mt-2 overflow-y-auto"
+            class="flex mt-2 overflow-y-auto flex-col md:flex-row"
             style="height: calc(90vh - 270px)"
           >
             <template v-if="files.length">
-              <div class="p-2 border-r overflow-y-auto" style="width: 300px">
+              <div class="p-2 md:border-r overflow-y-auto" style="width: 300px">
                 <div
                   v-for="(item, index) in files"
                   :key="index"
@@ -189,8 +189,8 @@
                   <div class="flex">
                     <img
                       v-if="isImage(item.file)"
-                      :src="createImageUrl(item.file)"
-                      :style="{ width: width + 'px', height: height + 'px' }"
+                      :src="item.imageUrl || createImageUrl(item.file)"
+                      :style="{ width: '40px', height: '40px' }"
                       class="mr-2 object-contain"
                     />
                     <div class="mr-2 flex-1">
@@ -224,18 +224,25 @@
               <div class="mr-2 flex-1 p-2 pb-2 overflow-y-auto">
                 <template v-if="clickedFile">
                   <template v-if="!onCropImage">
-                    <div
-                      v-if="clickedFileIsImage"
-                      style="width: 50%; min-width: 300px"
-                      class="relative"
-                    >
-                      <img :src="clickedFileUrl" style="width: 100%" />
+                    <div v-if="clickedFileIsImage" class="relative">
+                      <img
+                        :src="clickedFileUrl"
+                        style="
+                          width: auto;
+                          max-height: 300px;
+                          object-fit: cover;
+                        "
+                      />
+                    </div>
+                    <div class="mt-2">
                       <el-button
-                        style="top: 8px; right: 8px; position: absolute"
                         icon="el-icon-crop"
-                        icon-only
+                        size="small"
+                        type="primary"
                         @click="showCropImage"
-                      ></el-button>
+                      >
+                        crop
+                      </el-button>
                     </div>
                     <div class="font-medium">{{ clickedFile.name }}</div>
                     <div class="text-xs">
@@ -253,12 +260,14 @@
                         <el-button
                           type="primary"
                           icon-only
+                          size="small"
                           icon="flip-x"
                           @click="flipX"
                         ></el-button>
                         <el-button
                           type="primary"
                           icon-only
+                          size="small"
                           icon="flip-y"
                           @click="flipY"
                         ></el-button>
@@ -266,6 +275,7 @@
                         <el-button
                           type="primary"
                           icon-only
+                          size="small"
                           icon="el-icon-refresh-right"
                           @click="rotate"
                         ></el-button>
@@ -292,11 +302,13 @@
         </el-tab-pane>
       </el-tabs>
 
-      <el-divider></el-divider>
-      <div class="w-full flex justify-end">
-        <el-button template="cancel" @click="cancel"></el-button>
-        <el-button template="save" text="Chọn" @click="confirm"></el-button>
-      </div>
+      <template v-if="activeTab === 'gallery'">
+        <el-divider></el-divider>
+        <div class="w-full flex justify-end">
+          <el-button template="cancel" @click="cancel"></el-button>
+          <el-button template="save" text="Chọn" @click="confirm"></el-button>
+        </div>
+      </template>
     </el-dialog>
 
     <el-dialog
@@ -391,6 +403,9 @@ export default {
     activeTab() {
       if (this.activeTab === 'upload') {
         this.clickedFile = null
+      }
+      if (this.activeTab === 'gallery') {
+        this.files = this.files.filter((item) => item.status !== 'success')
       }
     },
     clickedFile() {
@@ -582,12 +597,13 @@ export default {
           response: null,
         })
       })
+      event.target.value = null
     },
 
     async handleUpload() {
       this.onUpload = true
       try {
-        await Promise.all(
+        const newFiles = await Promise.all(
           this.files.map((item) => {
             if (item.status === 'success') return
             const { file } = item
@@ -603,6 +619,7 @@ export default {
                 item.response = response
                 item.url = response.url
                 item.status = 'success'
+                return response
               })
               .catch((err) => {
                 console.log('upload error', err)
@@ -610,6 +627,7 @@ export default {
               })
           })
         )
+        this.medias.unshift(...newFiles)
       } catch (error) {
         console.error(error)
       }
@@ -623,14 +641,17 @@ export default {
     cropImage() {
       const canvas = this.$refs.cropper.getCroppedCanvas()
       canvas.toBlob((blob) => {
-        const item = this.files.findIndex((e) => e.file === this.clickedFile)
+        const index = this.files.findIndex((e) => e.file === this.clickedFile)
+        const item = this.files[index]
         const file = new File([blob], this.clickedFile.name, {
           lastModified: new Date().getTime(),
           type: blob.type,
         })
         this.clickedFile = file
         item.file = file
+        item.imageUrl = URL.createObjectURL(file)
         this.onCropImage = false
+        this.files.splice(index, 1, item)
       }, this.clickedFile.type)
     },
 

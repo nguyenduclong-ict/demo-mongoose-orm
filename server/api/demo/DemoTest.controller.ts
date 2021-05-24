@@ -1,5 +1,5 @@
 import { Controller, handler, Params } from "@/helpers/api";
-import { IsNumber, IsOptional, IsString, Parse } from "@/helpers/validator";
+import { IsNumber, IsString, Parse } from "class-validate";
 import { NextFunction, Request, Response } from "express";
 
 class DemoTestParams {

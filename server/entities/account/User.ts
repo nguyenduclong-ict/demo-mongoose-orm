@@ -1,5 +1,5 @@
 import { connection } from "@/config/connection";
-import { IEntity, SchemaPopulates } from "@/helpers/mongoose";
+import { Form, IEntity, SchemaPopulates } from "@/helpers/mongoose";
 import { SchemaTypes, FilterQuery } from "mongoose";
 import {
   createSchema,
@@ -39,6 +39,10 @@ export class User extends IEntity {
 
   @Field({ type: Boolean, default: false })
   isAdmin?: boolean;
+
+  @Field({ type: String })
+  @Form({ type: "MediaPicker" })
+  avatar: string;
 
   @Field({ type: SchemaTypes.Mixed, default: {} })
   profile: {

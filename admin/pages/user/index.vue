@@ -1,6 +1,6 @@
 <template>
   <EntityCrud
-    :schema="schema"
+    :entity="schema"
     :custom-table-props="customTableProps"
   ></EntityCrud>
 </template>
@@ -15,7 +15,7 @@ export default {
   },
   mixins: [PageMixin],
   asyncData({ store }) {
-    const schema = store.state.schemas.User
+    const schema = store.state.entities.User
     return {
       schema,
     }

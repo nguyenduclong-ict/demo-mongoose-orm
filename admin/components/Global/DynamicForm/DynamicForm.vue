@@ -154,7 +154,7 @@ export default {
           },
         },
       }
-      return templates[field.ui?.type] || templates[field.type] || {}
+      return templates[field.form?.type] || templates[field.type] || {}
     },
 
     validate() {

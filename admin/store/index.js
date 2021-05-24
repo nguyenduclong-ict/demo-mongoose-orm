@@ -12,7 +12,7 @@ export const state = () => ({
   },
   fixedHeader: parseBool(localStorage.getItem(FIXED_HEADER) ?? true),
   theme,
-  schemas: {},
+  entities: {},
   permissions: [],
   page: {},
 })
@@ -25,8 +25,8 @@ export const mutations = {
   TOGGLE_FIXED_HEADER(state, value) {
     state.fixedHeader = value ?? !state.fixedHeader
   },
-  SET_SCHEMAS(state, value) {
-    state.schemas = value
+  SET_ENTITIES(state, value) {
+    state.entities = value
   },
   SET_PERMISSIONS(state, value) {
     state.permissions = value
@@ -72,8 +72,8 @@ export const getters = {
     if (entityMenu) {
       entityMenu = { ...entityMenu }
       entityMenu.children = entityMenu.children || []
-      Object.keys(state.schemas).forEach((key) => {
-        const entity = state.schemas[key]
+      Object.keys(state.entities).forEach((key) => {
+        const entity = state.entities[key]
         if (checkPermission.hasEntityPermission(entity, 'read')) {
           entityMenu.children.push({
             name: 'Entity' + entity.key,

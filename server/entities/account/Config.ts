@@ -12,7 +12,7 @@ import {
 
 @Entity<Config>({})
 export class Config extends IEntity {
-  @Field()
+  @Field({ type: String, required: true })
   key: string;
 
   @Field({

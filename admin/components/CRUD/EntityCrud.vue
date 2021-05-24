@@ -8,7 +8,7 @@ import { getService } from '~/config/services'
 export default {
   components: { DataTable },
   props: {
-    schema: Object,
+    entity: Object,
     customTableProps: {
       type: Function,
     },
@@ -23,10 +23,10 @@ export default {
 
   computed: {
     service() {
-      return getService(this.schema.key, this.schema.endpoint)
+      return getService(this.entity.key, this.entity.endpoint)
     },
     isLarge() {
-      return Object.keys(this.schema.schema).length > 10
+      return Object.keys(this.entity.fields).length > 10
     },
     computedTableProps() {
       if (this.customTableProps) {
@@ -38,11 +38,11 @@ export default {
 
   created() {
     this.tableProps = this.$initTable({
-      entitySchema: this.schema.schema,
+      entity: this.entity,
       service: this.service,
       data: [],
-      payload: this.schema.populates
-        ? { populates: this.schema.populates }
+      payload: this.entity.populates
+        ? { populates: this.entity.populates }
         : {},
       columns: [
         {
@@ -52,10 +52,10 @@ export default {
         },
       ]
         .concat(
-          ...Object.keys(this.schema.schema)
-            .filter((key) => !this.schema.schema[key]?.ui?.column?.hidden)
+          ...Object.keys(this.entity.fields)
+            .filter((key) => !this.entity.fields[key]?.column?.hidden)
             .map((key) => {
-              const field = this.schema.schema[key]
+              const field = this.entity.fields[key]
               return {
                 label: field.name || key,
                 prop: key,
@@ -66,7 +66,7 @@ export default {
                     : field.type === 'Date'
                     ? 'date'
                     : undefined,
-                ...field.ui?.column,
+                ...field.column,
               }
             })
         )
@@ -78,7 +78,7 @@ export default {
       dialogs: {
         edit: {
           props: {
-            // title: 'Chỉnh sửa ' + this.schema.name,
+            // title: 'Chỉnh sửa ' + this.entity.name,
             width: this.isLarge ? '90%' : undefined,
             top: '5vh',
             'custom-class': 'crud-dialog',
@@ -86,14 +86,14 @@ export default {
         },
         create: {
           props: {
-            title: 'Thêm mới ' + this.schema.name,
+            title: 'Thêm mới ' + this.entity.name,
             width: this.isLarge ? '90%' : undefined,
             top: '5vh',
             'custom-class': 'crud-dialog',
           },
         },
         view: {
-          title: 'Chi tiết ' + this.schema.name,
+          title: 'Chi tiết ' + this.entity.name,
           props: {},
         },
       },

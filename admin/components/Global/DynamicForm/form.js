@@ -1,26 +1,16 @@
 import { getService } from '~/config/services'
 
-export function getFieldConfig(field, schemas) {
+export function getFieldConfig(field, schemas, key) {
   let component
-  const props = {}
-  const rules = {
-    required: field.required || false,
-  }
-  const validateAny = (rule, value, cb) => {
-    if (rule.required && !value) {
-      return cb(new Error(field.prop + ' is required'))
-    }
-    cb()
-  }
+  let props = {}
   const map = {
     String: () => {
-      rules.type = 'string'
       component = 'ElInput'
       if (field.enum) {
         component = 'FormSelect'
         props.selectOptions = field.enum.map((e) => ({
           value: e,
-          label: field.ui?.enumMap?.[e] || e,
+          label: field.form?.enumMap?.[e] || e,
         }))
       } else if (field.subType === 'textarea') props.type = 'textarea'
     },
@@ -28,20 +18,16 @@ export function getFieldConfig(field, schemas) {
       component = 'InputNumber'
       props.min = field.min
       props.max = field.max
-      rules.type = 'number'
     },
     Boolean: () => {
       component = 'ElSwitch'
-      rules.type = 'boolean'
     },
     Mixed: () => {
       component = 'FormMixed'
       props.type = 'textarea'
       props.autosize = true
-      rules.type = 'object'
     },
     Array: () => {
-      rules.type = 'array'
       props.style = 'width: 100%;'
       if (field.arrayType === 'ObjectId') {
         component = 'SelectEntity'
@@ -60,7 +46,7 @@ export function getFieldConfig(field, schemas) {
         if (field.enum) {
           props.selectOptions = field.enum.map((e) => ({
             value: e,
-            label: field.ui?.enumMap?.[e] || e,
+            label: field.form?.enumMap?.[e] || e,
           }))
           props.allowCreate = false
         } else {
@@ -76,30 +62,72 @@ export function getFieldConfig(field, schemas) {
       props.service = getService(field.ref, schemas[field.ref]?.endpoint)
       props.limit = 1
       props.style = 'width: 100%;'
-      rules.validator = validateAny
     },
     Date() {
       component = 'ElDatePicker'
       props.format = 'dd-MM-yyyy'
-      rules.validator = validateAny
       if (field.subType === 'datetime') {
         props.type = 'datetime'
         props.format = 'dd-MM-yyyy HH:mm'
       }
     },
+    Seo() {
+      component = 'Seo'
+    },
+    Checkbox() {
+      component = 'ElCheckbox'
+    },
+    Select() {
+      component = 'FormSelect'
+    },
+    Address() {
+      component = 'AddressEdit'
+    },
+    RichText() {
+      component = 'TinymceEditor'
+      props.style = {
+        width: '100%',
+      }
+    },
+    MediaPicker() {
+      component = 'MediaPicker'
+      props = {
+        ...props,
+        limit: field.type === 'Array' ? 100 : 1,
+        ...field.props,
+      }
+    },
+    SelectEntity() {
+      component = 'SelectEntity'
+      props = {
+        ...props,
+        limit: field.type === 'Array' ? 100 : 1,
+        ...field.props,
+        clearable: !field.required,
+      }
+    },
+    JSON() {
+      component = 'VueJsonEditor'
+      props = {
+        ...props,
+        mode: 'code',
+      }
+    },
   }
-  map[field.type] && map[field.type]()
-  if (field.ui?.type) {
-    component = field.ui?.type
+  const type = field.form?.type || field.type
+  if (type) {
+    map[type] && map[type]()
+    const fieldConfig = {
+      label: field.name || key,
+      component,
+      prop: key,
+      props: {
+        ...props,
+        ...field.form?.input,
+      },
+      ...field.form,
+    }
+    return fieldConfig
   }
-  Object.assign(props, field.ui?.form?.input || {})
-  const fieldConfig = {
-    label: field.name,
-    component,
-    props,
-    rules,
-  }
-  if (field.ui?.form?.col) fieldConfig.col = field.ui?.form?.col
-  fieldConfig.label = field.ui?.form?.label || field.name
-  return fieldConfig
+  return field
 }

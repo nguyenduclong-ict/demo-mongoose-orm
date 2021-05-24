@@ -5,7 +5,7 @@ import {
   RequestHandler,
   Response,
 } from "express";
-import { getValidator, parseClassParams } from "./validator";
+import { getValidator, parseClassParams } from "class-validate";
 import Validator, { ErrorList } from "async-validator";
 import { E } from "@/config";
 import "reflect-metadata";

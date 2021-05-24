@@ -39,7 +39,14 @@
               <div
                 v-for="action in allActions"
                 :key="action"
-                class="inline-flex items-center px-4 first:pl-0 border-r last:border-r-0"
+                class="
+                  inline-flex
+                  items-center
+                  px-4
+                  first:pl-0
+                  border-r
+                  last:border-r-0
+                "
               >
                 <el-checkbox
                   :value="isHasEntityPermission(entity, action)"
@@ -115,7 +122,6 @@ export default {
   mixins: [PageMixin],
 
   async asyncData({ $api, $axios, params, store, error }) {
-    const { schemas } = store.state
     let permissions
     let role
     const entities = {}
@@ -157,8 +163,8 @@ export default {
     }
 
     // Entities
-    Object.keys(schemas).forEach((key) => {
-      entities[key] = cloneDeep(schemas[key])
+    Object.keys(store.state.entities).forEach((key) => {
+      entities[key] = cloneDeep(store.state.entities[key])
       entities[key].permissions = permissions.filter(
         (item) => item.entityType === 'entity' && item.entity === key
       )

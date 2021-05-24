@@ -25,7 +25,7 @@
         <el-button
           v-if="dialogs.create"
           template="create"
-          @click="handelShowCreate"
+          @click="handleShowCreate"
         ></el-button>
       </div>
     </div>
@@ -146,7 +146,7 @@
       >
         <DetailEntity
           v-if="selectedRow"
-          :schema="entitySchema"
+          :schema="entity"
           v-bind="dialogs.view"
           :entity="selectedRow"
         />
@@ -307,7 +307,7 @@ export default {
         exact: true,
       }),
     },
-    entitySchema: Object,
+    entity: Object,
     hooks: {
       type: Object,
       default: () => ({}),
@@ -364,16 +364,11 @@ export default {
     getUpdateFields() {
       if (this.dialogs.edit?.form?.fields)
         return this.dialogs.edit?.form?.fields
-      if (this.entitySchema) {
-        return Object.keys(this.entitySchema).map((key) => {
-          const field = this.entitySchema[key]
-          const c = getFieldConfig(field, this.$store.state.schemas)
-          const isLarge = Object.keys(this.entitySchema).length > 10
-          return defaultsDeep(c, field, {
-            col: isLarge ? { md: 12 } : {},
-            label: key,
-            prop: key,
-          })
+      if (this.entity) {
+        return Object.keys(this.entity.fields).map((key) => {
+          const field = this.entity.fields[key]
+          const c = getFieldConfig(field, this.$store.state.entities, key)
+          return defaultsDeep(c, field)
         })
       }
       return []
@@ -381,16 +376,11 @@ export default {
     getCreateFields() {
       if (this.dialogs.create?.form?.fields)
         return this.dialogs.create?.form?.fields
-      if (this.entitySchema) {
-        return Object.keys(this.entitySchema).map((key) => {
-          const field = this.entitySchema[key]
-          const c = getFieldConfig(field, this.$store.state.schemas)
-          const isLarge = Object.keys(this.entitySchema).length > 10
-          return defaultsDeep(c, field, {
-            col: isLarge ? { md: 12 } : {},
-            label: key,
-            prop: key,
-          })
+      if (this.entity) {
+        return Object.keys(this.entity.fields).map((key) => {
+          const field = this.entity.fields[key]
+          const c = getFieldConfig(field, this.$store.state.entities, key)
+          return defaultsDeep(c, field)
         })
       }
       return []
@@ -417,7 +407,7 @@ export default {
       return text
     },
     getCellText(row, column) {
-      const field = this.entitySchema?.[column.prop]
+      const field = this.entity?.[column.prop]
       if (field?.props?.labelKey) {
         return get(row, [column.prop, field?.props?.labelKey].join('.'))
       } else {
@@ -477,7 +467,7 @@ export default {
         this.$message.error(this.getErrorMessage(error))
       }
     },
-    handelShowCreate() {
+    handleShowCreate() {
       if (this.dialogs.create.onShow) {
         this.dialogs.create.onShow()
         return
