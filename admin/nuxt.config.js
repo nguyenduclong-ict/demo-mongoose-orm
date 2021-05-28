@@ -1,11 +1,15 @@
 import { routes as appRoutes } from './config/router'
+import { pick } from './utils/lodash'
 const isDev = process.env.NODE_ENV !== 'production'
 const port = isDev
   ? Number(process.env.ADMIN_PORT) || Number(process.env.PORT || 3000) + 1
   : undefined
 // eslint-disable-next-line
 module.exports = {
-  env: { API_URL: process.env.SERVER_URL },
+  env: {
+    API_URL: process.env.API_URL,
+    SERVER_URL: process.env.SERVER_URL,
+  },
   srcDir: 'admin',
   buildDir: 'admin/.nuxt',
   generate: {

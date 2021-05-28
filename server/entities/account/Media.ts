@@ -13,6 +13,7 @@ import { User } from "./User";
 import fs from "fs";
 import path from "path";
 import { UPLOAD_PATH } from "@/config/env";
+import { Form, IEntity } from "@/helpers";
 
 export enum MediaSource {
   LOCAL = "local",
@@ -24,7 +25,7 @@ export enum MediaSource {
   timestamps: true,
   owner: true,
 })
-export class Media {
+export class Media extends IEntity {
   @Field({ type: String })
   name: string;
 
@@ -45,8 +46,26 @@ export class Media {
   @Field({ type: Number, default: 0 })
   size?: number;
 
-  @Field({ type: Array, of: String, default: [] })
-  thumbnails?: string[];
+  @Field({ type: Array, of: SchemaTypes.Mixed, default: [] })
+  @Form({ type: "JSON" })
+  thumbs?: {
+    path?: string;
+    width?: number;
+    height?: number;
+    url?: string;
+    size?: number;
+    id: any;
+    description?: string;
+  }[];
+
+  thumbnails?: {
+    path?: string;
+    width?: number;
+    height?: number;
+    url?: string;
+    id: any;
+    description?: string;
+  }[];
 
   @Field({ type: SchemaTypes.String })
   fileType?: string;
@@ -65,8 +84,21 @@ export const MediaSchema = createSchema(Media);
 
 MediaSchema.virtual("url").get(function (this: any) {
   if (this.type === MediaSource.LOCAL)
-    return urljoin(process.env.SERVER_URL, "/api/file", this.name);
+    return urljoin(process.env.SERVER_URL, "/api/file", this.id);
   if (this.type === MediaSource.EXTERNAL) return this.src;
+});
+
+MediaSchema.virtual("thumbnails").get(function (this: any) {
+  return this.thumbs.map((thum: any) => {
+    return {
+      ...thum,
+      url: urljoin(process.env.SERVER_URL, "/api/file", this.id, thum.id),
+    };
+  });
+});
+
+MediaSchema.virtual("serverUrl").get(function (this: any) {
+  return process.env.SERVER_URL;
 });
 
 @Inject<Repository>({ connection, schema: MediaSchema })
@@ -84,7 +116,10 @@ export class MediaRepository extends Repository<Media> {
 
     await Promise.all(
       deleted.map((media) => {
-        const filePaths = [media.path, ...(media.thumbnails || [])];
+        const filePaths = [
+          media.path,
+          ...(media.thumbnails.map((e) => e.path).filter((e) => !!e) || []),
+        ];
         return Promise.all(
           filePaths.map((filePath) =>
             fs.promises

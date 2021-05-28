@@ -1,5 +1,5 @@
 <template>
-  <div class="permission-page">
+  <div v-if="!user.isAdmin" class="permission-page">
     <Teleport to=".navbar #control" class="flex items-center">
       <el-button template="save" @click="handleSave" />
     </Teleport>
@@ -117,6 +117,7 @@
       </el-tab-pane>
     </el-tabs>
   </div>
+  <Empty v-else text="Admin có tất cả các quyền trên hệ thống" />
 </template>
 
 <script>
@@ -134,8 +135,6 @@ export default {
 
   async asyncData({ $api, $axios, params, store, error }) {
     const entities = {}
-
-    console.log($api)
 
     const [user, permissions] = await Promise.all([
       $api.User.findOne({ query: { id: params.id } }),

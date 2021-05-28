@@ -46,6 +46,7 @@
     "slugify": "^1.4.7",
     "tsconfig-paths": "^3.9.0",
     "url-join": "^4.0.1",
+    "uuid": "^8.3.2",
     "vue-cropperjs": "4.2.0",
     "vue-json-editor": "^1.4.3",
     "vue-json-pretty": "^1.8.0",
@@ -67,6 +68,7 @@
     "@types/sharp": "^0.27.2",
     "@types/shortid": "0.0.29",
     "@types/url-join": "^4.0.0",
+    "@types/uuid": "^8.3.0",
     "@types/wrap-ansi": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.10.0",
@@ -77,6 +79,7 @@
     "reflect-metadata": "^0.1.13",
     "sass": "^1.32.4",
     "sass-loader": "^10.1.1",
+    "stylelint-scss": "^3.19.0",
     "ts-node": "^9.1.1",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.1.3"

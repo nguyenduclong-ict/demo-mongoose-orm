@@ -1,10 +1,12 @@
 <template>
-  <div
-    class="w-full flex justify-center items-center flex-col"
-    style="min-height: 8rem"
-  >
-    <icon name="empty" class="text-5xl text-gray-500" />
-    <span class="text-gray-500">{{ text }}</span>
+  <div class="w-full flex justify-center items-center" style="min-height: 8rem">
+    <div
+      class="flex flex-col justify-center items-center"
+      @click="$emit('click', $event)"
+    >
+      <icon :name="icon || 'empty'" class="text-5xl text-gray-500" />
+      <span class="text-gray-500">{{ text }}</span>
+    </div>
   </div>
 </template>
 

@@ -45,6 +45,7 @@ export class User extends IEntity {
   avatar: string;
 
   @Field({ type: SchemaTypes.Mixed, default: {} })
+  @Form({ type: "JSON", label: "Profile" })
   profile: {
     name?: string;
     gender?: "male" | "female";

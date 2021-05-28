@@ -78,7 +78,6 @@ export default {
       dialogs: {
         edit: {
           props: {
-            // title: 'Chỉnh sửa ' + this.entity.name,
             width: this.isLarge ? '90%' : undefined,
             top: '5vh',
             'custom-class': 'crud-dialog',

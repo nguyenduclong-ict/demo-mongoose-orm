@@ -1,4 +1,4 @@
-module.exports.ROUTES = {
+export const ROUTES = {
   LOGIN: 'Login',
   REGISTER: 'Register',
   DASHBOARD: 'Dashboard',
@@ -11,6 +11,7 @@ module.exports.ROUTES = {
   AppearanceSetting: 'AppearanceSetting',
   PageSetting: 'PageSetting',
   Entity: 'Entity',
+  Media: 'Media',
   // User
   User: 'User',
   Post: 'Post',

@@ -134,7 +134,13 @@
       ref="dialogView"
       width=""
       custom-class="table-dialog-view"
-      :title="dialogs.view.title || '' + _.get(selectedRow, 'name', '')"
+      :title="
+        _.get(dialogs, 'view.props.title') ||
+        'Chi tiết ' +
+          (_.get(selectedRow, 'name', '') ||
+            _.get(selectedRow, 'title', '') ||
+            _.get(selectedRow, 'id', ''))
+      "
       :visible.sync="isShowView"
       v-bind="dialogs.view.props"
     >
@@ -157,11 +163,11 @@
       v-if="dialogs.edit"
       ref="dialogEdit"
       :title="
-        _.get(
-          dialogs,
-          'edit.props.title',
-          'Chỉnh sửa ' + _.get(selectedRow, 'name', '')
-        )
+        _.get(dialogs, 'edit.props.title') ||
+        'Chỉnh sửa ' +
+          (_.get(selectedRow, 'name', '') ||
+            _.get(selectedRow, 'title', '') ||
+            _.get(selectedRow, 'id', ''))
       "
       :visible.sync="isShowEdit"
       v-bind="dialogs.edit.props"
@@ -775,7 +781,7 @@ export default {
 
   .el-dialog__body {
     max-height: calc(90vh - 54px);
-    overflow: scroll;
+    overflow: auto;
   }
 
   @media screen and (min-width: 800px) {

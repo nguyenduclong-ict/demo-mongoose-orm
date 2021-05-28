@@ -1,8 +1,9 @@
-// import { ROUTES } from './constants/routes'
-const { ROUTES } = require('./constants/routes')
+import { ROUTES } from './constants/routes'
+
+console.log(ROUTES)
 
 /** @type {import('~/typings').Route[]} */
-module.exports.routes = [
+export const routes = [
   {
     name: ROUTES.DASHBOARD,
     path: '/',
@@ -95,6 +96,16 @@ module.exports.routes = [
       menu: true,
     },
     component: '~/pages/entities/index.vue',
+  },
+  {
+    name: ROUTES.Media,
+    path: '/media',
+    meta: {
+      icon: 'el-icon-picture',
+      title: 'Thư viện',
+      menu: true,
+    },
+    component: '~/pages/media.vue',
   },
   {
     name: ROUTES.Redirect,
